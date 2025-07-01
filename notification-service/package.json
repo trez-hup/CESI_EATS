@@ -1,0 +1,31 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "description": "notif",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trez-hup/CESI_EATS.git"
+  },
+  "author": "trez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trez-hup/CESI_EATS/issues"
+  },
+  "homepage": "https://github.com/trez-hup/CESI_EATS#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "g": "^2.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10"
+  }
+}

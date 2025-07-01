@@ -1,0 +1,122 @@
+version: "3.8"
+
+x-mongo: &mongo
+  image: mongo:6
+  command: ["mongod","--replSet","rs0","--bind_ip_all"]
+  healthcheck:                        # init auto du replica-set
+    test: ["CMD-SHELL","mongosh --quiet --eval 'rs.status().ok || rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"$$HOST:27017\"}]})'"]
+    interval: 10s
+    retries: 5
+  volumes:
+    - mongo-data:/data/db             # volume générique
+
+services:
+  # ---------- MONGO GLOBAL (option la plus simple) ----------
+  mongo:
+    <<: *mongo
+    container_name: mongo             # un seul Mongo multi-DB
+    ports: ["27017:27017"]
+
+  # ---------- AUTH ----------
+  auth-service:
+    build: ./auth-service
+    environment:
+      - PORT=3001
+      - MONGO_URL=mongodb://mongo:27017/authdb?replicaSet=rs0
+      - JWT_SECRET=supersecret
+    depends_on: [ mongo ]
+    ports: ["3001:3001"]
+
+  # ---------- USER ----------
+  user-service:
+    build: ./user-service
+    environment:
+      - PORT=3002
+      - MONGO_URL=mongodb://mongo:27017/userdb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3002:3002"]
+
+  # ---------- RESTAURANT ----------
+  restaurant-service:
+    build: ./restaurant-service
+    environment:
+      - PORT=3003
+      - MONGO_URL=mongodb://mongo:27017/restaurantdb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3003:3003"]
+
+  # ---------- ORDER ----------
+  order-service:
+    build: ./order-service
+    environment:
+      - PORT=3004
+      - MONGO_URL=mongodb://mongo:27017/orderdb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3004:3004"]
+
+  # ---------- MENU ----------
+  menu-service:
+    build: ./menu-service
+    environment:
+      - PORT=3008
+      - MONGO_URI=mongodb://mongo:27017/menudb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3008:3008"]
+
+  # ---------- DELIVERY ----------
+  delivery-service:
+    build: ./delivery-service
+    environment:
+      - PORT=3005
+      - MONGO_URL=mongodb://mongo:27017/deliverydb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3005:3005"]
+
+  # ---------- PAYMENT ----------
+  payment-service:
+    build: ./payment-service
+    environment:
+      - PORT=3006
+      - STRIPE_SECRET=sk_test_xxx
+      - FRONTEND_URL=http://localhost:5173
+    ports: ["3006:3006"]
+
+  # ---------- NOTIFICATION ----------
+  notification-service:
+    build: ./notification-service
+    environment:
+      - PORT=3007
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=ton.email@gmail.com
+      - SMTP_PASS=mot_de_passe_app
+    ports: ["3007:3007"]
+
+  # ---------- REVIEW ----------
+  review-service:
+    build: ./review-service
+    environment:
+      - PORT=3008
+      - MONGO_URL=mongodb://mongo:27017/reviewdb?replicaSet=rs0
+    depends_on: [ mongo ]
+    ports: ["3008:3008"]
+
+  # ---------- API GATEWAY ----------
+  api-gateway:
+    build: ./api-gateway
+    env_file: ./api-gateway/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - user-service
+      - restaurant-service
+      - order-service
+      - delivery-service
+      - payment-service
+      - notification-service
+      - review-service
+
+
+volumes:
+  mongo-data:

@@ -1,0 +1,38 @@
+{
+  "name": "cesi_eats",
+  "version": "1.0.0",
+  "description": "clone de uber eats",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "prisma": "prisma generate",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trez-hup/CESI_EATS.git"
+  },
+  "author": "trez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trez-hup/CESI_EATS/issues"
+  },
+  "homepage": "https://github.com/trez-hup/CESI_EATS#readme",
+  "dependencies": {
+    "@prisma/client": "^6.10.1",
+    "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "g": "^2.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.0",
+    "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "prisma": "^6.10.1"
+  }
+}
